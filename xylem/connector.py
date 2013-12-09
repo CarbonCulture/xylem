@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
+
 import requests
 
 from xylem import __version__
 
 ROOT = 'http://nectarine.infra.carbonculture.net'
+
+log = logging.getLogger(__name__)
 
 
 class HttpError(Exception):
@@ -30,12 +34,9 @@ class XylemConnector(object):
         self.services = {}
         self._discover(self._test_connection())
 
-    def _log(self, level, msg, extra=None):
-        print msg, extra
-
     def get(self, endpoint=None, params=None):
         """Make a get."""
-        self._log('debug', 'Get: {0}'.format(endpoint or self.endpoint), extra=params)
+        log.debug('Get: {0}'.format(endpoint or self.endpoint), extra=params)
         r = requests.get(
             endpoint or self.endpoint,
             params=params,

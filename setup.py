@@ -5,6 +5,9 @@ from setuptools import setup, find_packages
 
 from xylem import __version__
 
+tests_require = ['httpretty', 'nose']
+
+
 setup(
     name='xylem',
     version=__version__,
@@ -16,9 +19,9 @@ setup(
     # Any executable scripts, typically in 'bin'. E.g 'bin/do-something.py'
     scripts=[],
     # REQUIRED: Your project's URL
-    url='',
+    url='http://github.com/CarbonCulture/xylem',
     # Put your license here. See LICENSE.txt for more information
-    license='',
+    license='MIT',
     # Put a nice one-liner description here
     description='Xylem is CarbonCulture\'s data API client library',
     long_description=open('README.rst').read() if exists("README.rst") else "",
@@ -26,4 +29,6 @@ setup(
     install_requires=[
         'requests == 2.0.1',
     ],
+    tests_require=tests_require,
+    extras_require={'test': tests_require},
 )
