@@ -3,11 +3,6 @@ xylem
 
 Library to interact with CarbonCulture's Confluence datastore
 
-#.. image:: https://badge.fury.io/py/xylem.png
-#    :target: https://badge.fury.io/py/xylem
-#
-#.. image:: https://pypip.in/d/xylem/badge.png
-#    :target: https://pypi.python.org/pypi/xylem
 
 Installation
 ------------
@@ -19,12 +14,12 @@ Installation using pip::
 Usage
 -----
 
-*Usage instructions here*
+You'll need an API key and an access name (like a username). Please contact
+developer {at] carbonculture.net to request a key and access name.
+
 
 Credits
 -------
-
-*Any credits here*
 
 xylem is packaged using seed_.
 
