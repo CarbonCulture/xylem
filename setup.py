@@ -26,7 +26,9 @@ setup(
     description='Xylem is CarbonCulture\'s data API client library',
     long_description=open('README.rst').read() if exists("README.rst") else "",
     # Any requirements here, e.g. "Django >= 1.1.1"
-    install_requires=map(lambda x: x.strip(), filter(lambda x: x, open('requirements.txt').readlines())),
+    install_requires=[
+        'requests>=2.0.1',
+    ],
     tests_require=tests_require,
     extras_require={'test': tests_require},
 )
