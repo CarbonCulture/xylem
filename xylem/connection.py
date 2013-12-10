@@ -15,7 +15,7 @@ class HttpError(Exception):
     pass
 
 
-class XylemConnection(object):
+class Connection(object):
     """Basic class configured to make requests to CarbonCulture's Data API."""
 
     def __init__(self, access_name, api_key, root=None, format=None):
