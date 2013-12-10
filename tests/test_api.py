@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import httpretty
 
-from xylem.connector import XylemConnector, ROOT
+from xylem.connector import XylemConnection, ROOT
 from xylem.subjects import discover_available_resources
 
 
@@ -72,7 +72,7 @@ class XylemTestCase(TestCase):
             httpretty.GET, "{0}/api/v1/".format(ROOT),
             body=BASIC_RESOURCES_AVAILABLE, content_type="application/json"
         )
-        xc = XylemConnector('fake', 'fake')
+        xc = XylemConnection('fake', 'fake')
         httpretty.register_uri(
             httpretty.GET, xc.services['channel'],
             body=PLACE_BASIC_UTILS, content_type="application/json"

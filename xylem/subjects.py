@@ -6,7 +6,7 @@
 def discover_available_resources(conn, subject_id, subject_type_plural='places'):
     """Return a dictionary of channels keyed by the resource slug.
 
-    :param xylem.XylemConnector conn: The XylemConnector configured to the API
+    :param xylem.XylemConnection conn: The connection configured to the API
     :param int subject_id: ID of the subject to locate.
     :param str subject_type_plural: Default: 'places'.
     :rtype dict: Resource-keyed channel info (such as {'elec': {...}})
