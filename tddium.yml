@@ -1,0 +1,6 @@
+---
+:tddium:
+  :tests:
+    - pip install . && nosetests
+  :python:
+    :python_version: 2.7
