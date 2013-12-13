@@ -1,6 +1,6 @@
 ---
 :tddium:
   :tests:
-    - pip install . && nosetests
+    - python setup.py test
   :python:
     :python_version: 2.7
