@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
+import json
 
 import requests
 
@@ -34,15 +35,46 @@ class Connection(object):
         self.services = {}
         self._discover(self._test_connection())
 
-    def get(self, endpoint=None, params=None):
-        """Make a get."""
-        log.debug('Get: {0}'.format(endpoint or self.endpoint), extra=params)
-        r = requests.get(
+    def _request(self, endpoint=None, method=None, params=None, data=None,
+                 extra_headers=None):
+        """Generic request, default to GET."""
+        method = method or 'get'
+        headers = extra_headers or {}
+        headers.update(self.headers)
+        log.debug(
+            '{0}: {1}'.format(method, endpoint or self.endpoint),
+            extra={
+                'params': params,
+                'data': data,
+                'headers': headers,
+            }
+        )
+        fn = getattr(requests, method)
+        r = fn(
             endpoint or self.endpoint,
             params=params,
-            headers=self.headers,
+            data=data,
+            headers=headers,
         )
         return r
+
+    def get(self, endpoint=None, params=None):
+        """Make a get."""
+        return self._request(endpoint, params=params)
+
+    def patch(self, endpoint=None, params=None, data=None):
+        """Partial update to resource (e.g. put history or change meta)."""
+        return self._request(
+            endpoint, params=params, data=json.dumps(data), method='patch',
+            extra_headers={
+                'Content-Type': 'application/json',
+            }
+        )
+
+    def post(self, endpoint=None, params=None, data=None):
+        """Partial update to resource (e.g. put history or change meta)."""
+        return self._request(
+            endpoint, params=params, data=data, method='post')
 
     def _test_connection(self):
         """Ping the endpoint and check we get a 200"""
@@ -79,3 +111,20 @@ class Connection(object):
             channels.update(dict(
                 [(ch['slug'], ch) for ch in content['objects']]))
         return channels
+
+    def write_channel_values(self, channel_slug, values):
+        """Write the given values to the channel identified by channel_slug.
+
+        :param str channel_slug: Slug of channel to which data will be written
+        :param list values: (timestamp, value) list to write to channel
+        :rtype (int, str): (status code (one of: 202, 401), message)
+
+        """
+        _r = self.patch(
+            self.services['channel'] + channel_slug,
+            data={
+                'values': values
+            },
+        )
+
+        return (_r.status_code, _r.content)
