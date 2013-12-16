@@ -28,6 +28,7 @@ setup(
     # Any requirements here, e.g. "Django >= 1.1.1"
     install_requires=[
         'requests>=2.0.1',
+        'pytz',
     ],
     tests_require=tests_require,
     extras_require={'test': tests_require},
