@@ -8,6 +8,7 @@ import requests
 from xylem import __version__
 
 ROOT = 'http://nectarine.infra.carbonculture.net'
+API_PREFIX = 'api/v1'
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class Connection(object):
         self.access_name = access_name
         self.api_key = api_key
         self.root = root or ROOT
-        self.endpoint = '{0}/api/v1/'.format(self.root)
+        self.endpoint = '/'.join([self.root, API_PREFIX])
         self.format = format or 'application/json'
 
         self.headers = {
