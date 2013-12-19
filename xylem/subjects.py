@@ -31,25 +31,25 @@ def discover_available_resources(conn, subject_id,
     return resources
 
 
-def write_app_claim(conn, app_slug, claim_slug, claim_data, subject_id,
+def write_app_event(conn, app_slug, event_slug, event_data, subject_id,
                     subject_type_plural='communities'):
-    """Write claim_data to the subject's claim_slug channel.
+    """Write event_data to the subject's event_slug channel.
 
     :param xylem.Connection conn: The connection configured to the API.
-    :param str app_slug: Slug of app for which this claim is being written.
-    :param str claim_slug: Slug of claim for which this data is being written
-    :param dict claim_data: key-value of data that describes this claim.
-    :param int subject_id: ID of the subject about which this claim is made.
+    :param str app_slug: Slug of app for which this event is being written.
+    :param str event_slug: Slug of event for which this data is being written
+    :param dict event_data: key-value of data that describes this event.
+    :param int subject_id: ID of the subject about which this event is made.
     :param str subject_type_plural: Default: 'communities'
 
     """
     channel_slug = ".".join([
         subject_type_plural, str(subject_id),
-        'apps', app_slug, 'claims', claim_slug,
+        'apps', app_slug, 'events', event_slug,
     ])
     now = datetime.utcnow().replace(tzinfo=pytz.utc)
     code, message = conn.write_channel_values(
-        channel_slug, [(now.isoformat(), claim_data)])
+        channel_slug, [(now.isoformat(), event_data)])
     if code != 202:
         raise APIError("API Error (Code: {0}): {1}".format(code, message))
 
