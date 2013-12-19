@@ -73,9 +73,13 @@ class Connection(object):
         )
 
     def post(self, endpoint=None, params=None, data=None):
-        """Partial update to resource (e.g. put history or change meta)."""
+        """Create resource."""
         return self._request(
-            endpoint, params=params, data=data, method='post')
+            endpoint, params=params, data=data, method='post',
+            extra_headers={
+                'Content-Type': 'application/json',
+            }
+        )
 
     def _test_connection(self):
         """Ping the endpoint and check we get a 200"""
@@ -126,6 +130,20 @@ class Connection(object):
             data={
                 'values': values
             },
+        )
+
+        return (_r.status_code, _r.content)
+
+    def create_channel(self, channel_data):
+        """Posts to the API to make a new channel. Doesn't do existence check.
+
+        :param dict channel_data: keys and values to make this channel.
+        :rtype (int, str): (status code (one of: 202, 401), message)
+
+        """
+        _r = self.post(
+            self.services['channel'],
+            data=channel_data,
         )
 
         return (_r.status_code, _r.content)
