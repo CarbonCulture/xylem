@@ -68,7 +68,7 @@ class Connection(object):
         if isinstance(data, dict):
             data = json.dumps(data)
         return self._request(
-            endpoint, params=params, data=json.dumps(data), method='patch',
+            endpoint, params=params, data=data, method='patch',
             extra_headers={
                 'Content-Type': 'application/json',
             }
