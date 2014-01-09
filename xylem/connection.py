@@ -65,6 +65,8 @@ class Connection(object):
 
     def patch(self, endpoint=None, params=None, data=None):
         """Partial update to resource (e.g. put history or change meta)."""
+        if isinstance(data, dict):
+            data = json.dumps(data)
         return self._request(
             endpoint, params=params, data=json.dumps(data), method='patch',
             extra_headers={
@@ -74,6 +76,8 @@ class Connection(object):
 
     def post(self, endpoint=None, params=None, data=None):
         """Create resource."""
+        if isinstance(data, dict):
+            data = json.dumps(data)
         return self._request(
             endpoint, params=params, data=data, method='post',
             extra_headers={
