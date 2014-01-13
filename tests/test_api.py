@@ -69,7 +69,7 @@ class XylemTestCase(TestCase):
     def test_resource_discovery(self):
         """Simple test to make sure dict ends up in the right format."""
         httpretty.register_uri(
-            httpretty.GET, "{0}/api/v1/".format(ROOT),
+            httpretty.GET, "{0}/api/v1".format(ROOT),
             body=BASIC_RESOURCES_AVAILABLE, content_type="application/json"
         )
         xc = Connection('fake', 'fake')
