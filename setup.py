@@ -29,6 +29,7 @@ setup(
     install_requires=[
         'requests>=2.0.1',
         'pytz',
+        'iso8601',
     ],
     tests_require=tests_require,
     extras_require={'test': tests_require},

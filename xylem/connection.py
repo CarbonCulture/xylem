@@ -3,6 +3,7 @@
 import logging
 import json
 
+import iso8601
 import requests
 
 from xylem import __version__
@@ -151,3 +152,28 @@ class Connection(object):
         )
 
         return (_r.status_code, _r.content)
+
+    def read_channel_latest_n_values(self, channel_slug, n=1):
+        """Retrieve the latest n points from a channel.
+
+        :param str channel_slug: Slug of channel for which to get data.
+        :param int n: defaults to 1, number of points to get.
+        :rtype list: tuple list of values
+
+        """
+        _r = self.get(
+            self.services['channel'],
+            params={
+                'slug': channel_slug,
+                'values__latest_n': n,
+            }
+        )
+        response = _r.json()
+        ch = response['objects'][0]
+        values = ch['values']
+        if isinstance(values, dict) and 'error' in values:
+            raise ValueError(values['error'])
+        return [
+            (iso8601.parse_date(t), v)
+            for t, v in values
+        ]
