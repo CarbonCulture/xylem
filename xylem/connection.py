@@ -153,6 +153,19 @@ class Connection(object):
 
         return (_r.status_code, _r.content)
 
+    def create_channels(self, channel_data_list):
+        """Convenience method to create several channels on one channels
+
+        :param list channel_data_list: list of dicts 
+        with keys and values for the channels
+        :rtype list: status codes for each of the channel creation calls.
+
+        """
+        responses = []
+        for ch in channel_data_list:
+            responses.append(self.create_channel(ch))
+        return responses
+
     def read_channel_latest_n_values(self, channel_slug, n=1):
         """Retrieve the latest n points from a channel.
 
@@ -177,3 +190,23 @@ class Connection(object):
             (iso8601.parse_date(t), v)
             for t, v in values
         ]
+
+    def assign_permissions_for_user_on_channel(self, user, channel_slug, permissions):
+        """Assign the set of permissions for the user
+        and the channel.
+
+        :param str user: User access_name.
+        :param str channel_slug: Slug of the channel.
+        :param list permissions: List of codenames of permissions. 
+        :rtype (int, str): (status code, message)
+
+        """
+        _r = self.patch(
+            self.services['channel'] + channel_slug,
+            data={
+                'user': user,
+                'permissions': permissions
+            },
+        )
+
+        return (_r.status_code, _r.content)
