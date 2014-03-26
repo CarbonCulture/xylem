@@ -3,6 +3,13 @@ Change-log for xylem.
 ----
 
 
+0.4.1
+-----
+
+Added create_channels helper
+Added assign_permissions_for_user_on_channel
+
+
 0.4.0
 -----
 
