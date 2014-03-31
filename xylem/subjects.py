@@ -6,8 +6,6 @@ from collections import defaultdict
 
 import pytz
 
-from xylem.connection import HttpError
-
 
 class APIError(Exception):
     pass
@@ -73,14 +71,11 @@ def discover_installed_apps(conn, subject_id,
     channel_root = ".".join([
         subject_type_plural, str(subject_id), 'apps'
     ]) + '.'
-    try:
-        channels = conn.list_channels(slug__startswith=channel_root)
-        apps = defaultdict(dict)
-        for slug, ch in channels.items():
-            app_part = slug[slug.index(channel_root) + len(channel_root):]
-            app_slug = app_part.split('.')[0]
-            apps[app_slug][slug] = ch
+    channels = conn.list_channels(slug__startswith=channel_root)
+    apps = defaultdict(dict)
+    for slug, ch in channels.items():
+        app_part = slug[slug.index(channel_root) + len(channel_root):]
+        app_slug = app_part.split('.')[0]
+        apps[app_slug][slug] = ch
 
-        return apps
-    except HttpError as e:
-        raise APIError("API Error: {0}".format(e))
+    return apps
