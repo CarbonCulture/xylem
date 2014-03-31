@@ -112,15 +112,20 @@ class Connection(object):
             self.services['channel'],
             params=kwargs
         )
-        content = r.json()
-
-        channels = dict([(ch['slug'], ch) for ch in content['objects']])
-        while content['meta']['next'] is not None:
-            r = self.get(self.root + content['meta']['next'])
+        if r.status_code == 200:
             content = r.json()
-            channels.update(dict(
-                [(ch['slug'], ch) for ch in content['objects']]))
-        return channels
+
+            channels = dict([(ch['slug'], ch) for ch in content['objects']])
+            while content['meta']['next'] is not None:
+                r = self.get(self.root + content['meta']['next'])
+                content = r.json()
+                channels.update(dict(
+                    [(ch['slug'], ch) for ch in content['objects']]))
+            return channels
+        else:
+            raise HttpError(
+                "Got response code {0} from {1}".format(
+                    r.status_code, self.endpoint))
 
     def write_channel_values(self, channel_slug, values):
         """Write the given values to the channel identified by channel_slug.
