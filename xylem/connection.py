@@ -112,15 +112,20 @@ class Connection(object):
             self.services['channel'],
             params=kwargs
         )
-        content = r.json()
-
-        channels = dict([(ch['slug'], ch) for ch in content['objects']])
-        while content['meta']['next'] is not None:
-            r = self.get(self.root + content['meta']['next'])
+        if r.status_code == 200:
             content = r.json()
-            channels.update(dict(
-                [(ch['slug'], ch) for ch in content['objects']]))
-        return channels
+
+            channels = dict([(ch['slug'], ch) for ch in content['objects']])
+            while content['meta']['next'] is not None:
+                r = self.get(self.root + content['meta']['next'])
+                content = r.json()
+                channels.update(dict(
+                    [(ch['slug'], ch) for ch in content['objects']]))
+            return channels
+        else:
+            raise HttpError(
+                "Got response code {0} from {1}".format(
+                    r.status_code, self.endpoint))
 
     def write_channel_values(self, channel_slug, values):
         """Write the given values to the channel identified by channel_slug.
@@ -128,7 +133,6 @@ class Connection(object):
         :param str channel_slug: Slug of channel to which data will be written
         :param list values: (timestamp, value) list to write to channel
         :rtype (int, str): (status code (one of: 202, 401), message)
-
         """
         _r = self.patch(
             self.services['channel'] + channel_slug,
@@ -172,7 +176,6 @@ class Connection(object):
         :param str channel_slug: Slug of channel for which to get data.
         :param int n: defaults to 1, number of points to get.
         :rtype list: tuple list of values
-
         """
         _r = self.get(
             self.services['channel'],
@@ -191,15 +194,15 @@ class Connection(object):
             for t, v in values
         ]
 
-    def assign_permissions_for_user_on_channel(self, user, channel_slug, permissions):
+    def assign_permissions_for_user_on_channel(
+            self, user, channel_slug, permissions):
         """Assign the set of permissions for the user
         and the channel.
 
         :param str user: User access_name.
         :param str channel_slug: Slug of the channel.
-        :param list permissions: List of codenames of permissions. 
+        :param list permissions: List of codenames of permissions.
         :rtype (int, str): (status code, message)
-
         """
         _r = self.patch(
             self.services['channel'] + channel_slug,
@@ -210,3 +213,39 @@ class Connection(object):
         )
 
         return (_r.status_code, _r.content)
+
+    def list_datausers(self):
+        """Retrieves a list of the datausers.
+
+        :rtype (int, str): (status code, message)
+        """
+        _r = self.get(
+            self.services['datauser']
+        )
+        return (_r.status_code, _r.content)
+
+    def create_datauser(self, access_name):
+        """Create datauser in Rhizome. Requires staff or admin user.
+
+        :param str access_name: DataUser access name.
+        :rtype (int, str): (status code, message).
+        """
+        _r = self.post(
+            self.services['datauser'],
+            data={"access_name": access_name},
+        )
+
+        return (_r.status_code, _r.content)
+
+    def create_datausers(self, access_names):
+        """Convenience method to create several datausers.
+
+        :param list access_names: list of access names of users.
+        with keys and values for the datausers
+        :rtype list: status codes for each of the datauser creation calls.
+        """
+        responses = []
+        for name in access_names:
+            r = self.create_datauser(name)
+            responses.append(r)
+        return responses

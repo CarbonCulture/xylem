@@ -3,6 +3,12 @@ Change-log for xylem.
 ----
 
 
+0.4.2
+-----
+
+Added list and create datausers.
+
+
 0.4.1
 -----
 
