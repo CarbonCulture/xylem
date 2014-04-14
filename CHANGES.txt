@@ -3,6 +3,12 @@ Change-log for xylem.
 ----
 
 
+0.4.3
+-----
+
+List datausers now re.
+
+
 0.4.2
 -----
 
