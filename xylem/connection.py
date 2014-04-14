@@ -217,10 +217,23 @@ class Connection(object):
     def list_datausers(self):
         """Retrieves a list of the datausers.
 
-        :rtype (int, str): (status code, message)
+        :rtype (int, str):
+        :return: (status code, message)
         """
         _r = self.get(
             self.services['datauser']
+        )
+        return (_r.status_code, _r.content)
+
+    def get_datauser(self, access_name):
+        """Retrieve a datauser based on an access name.
+
+        :rtype dict:
+        :return: Dict with the information for that datauser.
+        """
+        _r = self.get(
+            self.services['datauser'],
+            data={'access_name': access_name}
         )
         return (_r.status_code, _r.content)
 
