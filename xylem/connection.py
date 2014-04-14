@@ -215,25 +215,27 @@ class Connection(object):
         return (_r.status_code, _r.content)
 
     def list_datausers(self):
-        """Retrieves a list of the datausers handling pagination.
+        """Retrieves a list of the datausers.
 
-        :rtype list:
-        :return: List of datausers
+        :rtype (int, str):
+        :return: (status code, message)
         """
-        next = self.services['datauser']
-        datausers = []
-        while next:
-            if 'http' not in next:
-                next = self.root+next
-            _r = self.get(next)
-            if _r.status_code == 200 and _r.json().get('meta', False):
-                metadata = _r.json().get('meta')
-                datausers.extend(_r.json().get('objects'))
-                next = metadata.get('next')
-            else:
-                break
+        _r = self.get(
+            self.services['datauser']
+        )
+        return (_r.status_code, _r.content)
 
-        return datausers
+    def get_datauser(self, access_name):
+        """Retrieve a datauser based on an access name.
+
+        :rtype dict:
+        :return: Dict with the information for that datauser.
+        """
+        _r = self.get(
+            self.services['datauser'],
+            data={'access_name': access_name}
+        )
+        return (_r.status_code, _r.content)
 
     def create_datauser(self, access_name):
         """Create datauser in Rhizome. Requires staff or admin user.
