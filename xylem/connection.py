@@ -31,7 +31,7 @@ class Connection(object):
         self.headers = {
             'Authorization': 'ApiKey {0}:{1}'.format(
                 self.access_name, self.api_key),
-            'User-Agent': 'XylemConnection Version {0}'.format(__version__),
+            'User-Agent': 'Xylem Version {0}'.format(__version__),
             'Accept': self.format,
         }
         self.services = {}
@@ -160,7 +160,7 @@ class Connection(object):
     def create_channels(self, channel_data_list):
         """Convenience method to create several channels on one channels
 
-        :param list channel_data_list: list of dicts 
+        :param list channel_data_list: list of dicts
         with keys and values for the channels
         :rtype list: status codes for each of the channel creation calls.
 
@@ -233,7 +233,7 @@ class Connection(object):
         """
         _r = self.get(
             self.services['datauser'],
-            data={'access_name': access_name}
+            params={'access_name': access_name}
         )
         return (_r.status_code, _r.content)
 
