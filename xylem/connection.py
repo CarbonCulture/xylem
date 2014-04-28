@@ -10,7 +10,7 @@ import requests
 from xylem import __version__
 
 ROOT = 'https://rhizome.carbonculture.net'
-API_PREFIX = 'api/v1'
+API_PREFIX = 'api/v1/'
 
 log = logging.getLogger(__name__)
 

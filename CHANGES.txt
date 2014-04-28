@@ -2,6 +2,11 @@ Change-log for xylem.
 
 ----
 
+0.4.6
+-----
+
+Minor bugfix
+
 0.4.5
 -----
 
