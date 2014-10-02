@@ -3,6 +3,7 @@
 import logging
 import json
 import urlparse
+import urllib
 
 import iso8601
 import requests
@@ -233,7 +234,7 @@ class Connection(object):
         :return: Dict with the information for that datauser.
         """
         _r = self.get(
-            urlparse.urljoin(self.services['datauser'], access_name)
+            urlparse.urljoin(self.services['datauser'], urllib.quote(access_name))
         )
         return (_r.status_code, _r.content)
 
