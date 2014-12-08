@@ -1,6 +1,17 @@
 Change-log for xylem.
 
-----
+
+0.4.7
+-----
+
+Allow permission assignment (groups) for datausers.
+
+
+0.4.6
+-----
+
+Fix URL encoding
+
 
 0.4.5
 -----
