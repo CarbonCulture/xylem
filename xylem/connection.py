@@ -196,6 +196,22 @@ class Connection(object):
             for t, v in values
         ]
 
+    def assign_permissions_for_user(self, user, permissions):
+        """Assign the set of regular permissions for a user (groups).
+
+        :param str user: User access_name.
+        :param list permissions: List of codenames of permissions.
+        :rtype (int, str): (status code, message)
+        """
+        _r = self.patch(
+            urlparse.urljoin(self.services['datauser'], urllib.quote(user)),
+            data={
+                'permissions': permissions
+            },
+        )
+
+        return (_r.status_code, _r.content)
+
     def assign_permissions_for_user_on_channel(
             self, user, channel_slug, permissions):
         """Assign the set of permissions for the user
@@ -234,7 +250,8 @@ class Connection(object):
         :return: Dict with the information for that datauser.
         """
         _r = self.get(
-            urlparse.urljoin(self.services['datauser'], urllib.quote(access_name))
+            urlparse.urljoin(
+                self.services['datauser'], urllib.quote(access_name))
         )
         return (_r.status_code, _r.content)
 
