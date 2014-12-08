@@ -204,7 +204,7 @@ class Connection(object):
         :rtype (int, str): (status code, message)
         """
         _r = self.patch(
-            self.services['datauser'] + urllib.quote(user),
+            urlparse.urljoin(self.services['datauser'], urllib.quote(user)),
             data={
                 'permissions': permissions
             },
@@ -250,7 +250,8 @@ class Connection(object):
         :return: Dict with the information for that datauser.
         """
         _r = self.get(
-            urlparse.urljoin(self.services['datauser'], urllib.quote(access_name))
+            urlparse.urljoin(
+                self.services['datauser'], urllib.quote(access_name))
         )
         return (_r.status_code, _r.content)
 
