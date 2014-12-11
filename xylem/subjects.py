@@ -109,7 +109,10 @@ def minimum_data_presence_for_range(conn, earliest, latest, slug=None,
     """
     subject_type_plural = subject_type_plural or 'places'
     slugs = []
+
     if slug is None:
+        assert subject_id, "You must provide a subject_id if not a slug"
+        subject_id = str(subject_id)
         if utilities:
             for util in utilities:
                 slug = ".".join([subject_type_plural, subject_id, util])
@@ -128,7 +131,7 @@ def minimum_data_presence_for_range(conn, earliest, latest, slug=None,
     }
     try:
         resp = conn.get(
-            endpoint=conn.services['channels'], params=params
+            endpoint=conn.services['channel'], params=params
         )
     except HttpError as e:
         raise APIError("API Error: {}".format(e))
