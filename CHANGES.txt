@@ -1,5 +1,10 @@
 Change-log for xylem.
 
+0.4.8
+-----
+
+Function to get minimum presence of data over a date range/channel range
+
 
 0.4.7
 -----
