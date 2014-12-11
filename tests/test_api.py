@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
+import datetime
+
 from unittest import TestCase
 
 import httpretty
 
 from xylem.connection import Connection, ROOT
-from xylem.subjects import discover_available_resources
+from xylem.subjects import (
+    discover_available_resources, minimum_data_presence_for_range
+)
 
 
 BASIC_RESOURCES_AVAILABLE = """
@@ -80,3 +85,59 @@ class XylemTestCase(TestCase):
         resources = discover_available_resources(xc, 'N')
 
         self.assertEqual(sorted(resources.keys()), sorted(['elec', 'gas']))
+
+
+class QATests(TestCase):
+
+    @httpretty.activate
+    def test_min_presence_check(self):
+        httpretty.register_uri(
+            httpretty.GET, "{0}/api/v1".format(ROOT),
+            body=BASIC_RESOURCES_AVAILABLE, content_type="application/json"
+        )
+        resp = {
+            "meta": {
+                "qa_only": True,
+                "quality_assurance": [
+                    "presence"
+                ],
+                "values__earliest": "2014-12-01T00:00:00Z",
+                "values__latest": "2014-12-10T00:00:00Z"
+            },
+            "objects": [
+                {
+                    "quality_assurance": [
+                        ('TS HERE', [0.3]),
+                        ('TS HERE', [1]),
+                    ]
+                },
+                {
+                    "quality_assurance": [
+                        ('TS HERE', [0.5]),
+                        ('TS HERE', [1]),
+                    ]
+                }
+            ]
+        }
+        xc = Connection('fake', 'fake')
+        httpretty.register_uri(
+            httpretty.GET, xc.services['channel'],
+            body=json.dumps(resp), content_type="application/json"
+        )
+
+        min_presence = minimum_data_presence_for_range(
+            xc, datetime.now(), datetime.now(), subject_id=1, utilities=[
+                'elec', 'gas'
+            ]
+        )
+        self.assertEqual(min_presence, 0.3)
+
+        del resp['objects'][0]
+        httpretty.register_uri(
+            httpretty.GET, xc.services['channel'],
+            body=json.dumps(resp), content_type="application/json"
+        )
+        min_presence = minimum_data_presence_for_range(
+            xc, datetime.now(), datetime.now(), slug='a.b.c'
+        )
+        self.assertEqual(min_presence, 0.5)
