@@ -84,3 +84,65 @@ def discover_installed_apps(conn, subject_id,
         return apps
     except HttpError as e:
         raise APIError("API Error: {0}".format(e))
+
+
+def minimum_data_presence_for_range(conn, earliest, latest, slug=None,
+                                    subject_id=None, subject_type_plural=None,
+                                    utilities=None):
+
+    """Return minimum data presence for given subject: 0 to 1 (100%).
+
+    Note that for subjects with real-time data, this is currently unreliable.
+    Note that this represents data presence for known & configured sources.
+
+    :param xylem.Connection conn: The connection configured to the API
+    :param datetime earliest: from when to get presence value
+    :param datetime latest: up to (inclusive) when to get presence value
+    :param str slug: slug to get presence for, or None to use subject type/id
+    :param int subject_id: ID of the subject to locate, or None if using slug
+    :param str subject_type_plural: Default: 'places'
+    :param list utilities: list of utilities (elec, gas, etc.) or None
+    :rtype: float
+    :return: a value between 0 (no data) and 1 (100% expected data present)
+    :raises: APIError in the case that either the request fails or isn't 200 OK
+
+    """
+    subject_type_plural = subject_type_plural or 'places'
+    slugs = []
+
+    if slug is None:
+        assert subject_id, "You must provide a subject_id if not a slug"
+        subject_id = str(subject_id)
+        if utilities:
+            for util in utilities:
+                slug = ".".join([subject_type_plural, subject_id, util])
+                slugs.append(slug)
+        else:
+            slugs = [".".join([subject_type_plural, subject_id])]
+    else:
+        slugs = [slug]
+
+    params = {
+        'qa_only': True,
+        'quality_assurance': 'presence',
+        'values__earliest': earliest.isoformat(),
+        'values__latest': latest.isoformat(),
+        'slug__in': ",".join(slugs)
+    }
+    try:
+        resp = conn.get(
+            endpoint=conn.services['channel'], params=params
+        )
+    except HttpError as e:
+        raise APIError("API Error: {}".format(e))
+
+    if resp.status_code != 200:
+        raise APIError(
+            "API Error: ({}) {}".format(resp.status_code, resp.content))
+
+    min_presence = 1
+    for channel in resp.json()['objects']:
+        qa_presence = channel['quality_assurance']
+        presence_vals = [vals[0] for ts, vals in qa_presence]
+        min_presence = min(min_presence, min(presence_vals))
+    return min_presence
