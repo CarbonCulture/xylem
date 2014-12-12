@@ -1,5 +1,11 @@
 Change-log for xylem.
 
+0.4.9
+-----
+
+Simple read values method in connection
+
+
 0.4.8
 -----
 
