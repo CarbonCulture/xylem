@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import json
 
+from iso8601.iso8601 import Utc
+
 from datetime import datetime
 from unittest import TestCase
 
@@ -68,6 +70,47 @@ PLACE_BASIC_UTILS = """
 """
 
 
+VALUES_RESPONSE_MULTI_UNIT = {
+    "meta": {
+        "timezone": "UTC",
+        "units": [
+            "kWh",
+            "pence",
+            "kgCO2e"
+        ],
+        "values__earliest": "2014-12-01T00:00:00+00:00",
+        "values__latest": "2014-12-02T00:00:00+00:00"
+    },
+    "objects": [
+        {
+            "resource_uri": "/api/v1/channel/a.b.c",
+            "slug": "a.b.c",
+            "store_history": False,
+            "unit": "kWh",
+            "value_type": "accum",
+            "values": [
+                [
+                    "2014-12-01T00:00:00+00:00",
+                    [
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                [
+                    "2014-12-01T00:30:00+00:00",
+                    [
+                        3557.8727900740487,
+                        30241.918715629377,
+                        1866.531223128648
+                    ]
+                ],
+            ]
+        }
+    ]
+}
+
+
 class XylemTestCase(TestCase):
 
     @httpretty.activate
@@ -85,6 +128,30 @@ class XylemTestCase(TestCase):
         resources = discover_available_resources(xc, 'N')
 
         self.assertEqual(sorted(resources.keys()), sorted(['elec', 'gas']))
+
+    @httpretty.activate
+    def test_read_values_multi_units(self):
+        """Should get a dict keyed by timestamp, of dicts keyed by unit."""
+        httpretty.register_uri(
+            httpretty.GET, "{0}/api/v1".format(ROOT),
+            body=BASIC_RESOURCES_AVAILABLE, content_type="application/json"
+        )
+        xc = Connection('fake', 'fake')
+        httpretty.register_uri(
+            httpretty.GET, xc.services['channel'],
+            body=json.dumps(VALUES_RESPONSE_MULTI_UNIT),
+            content_type="application/json"
+        )
+        earliest = datetime(2014, 12, 1, 0, 0, 0, 0, Utc())
+        latest = datetime(2014, 12, 1, 0, 30, 0, 0, Utc())
+        result = xc.read_channel_values(
+            'a.b.c', earliest, latest, units=['kWh', 'pence', 'kgCO2e']
+        )
+        self.assertTrue(earliest in result)
+        self.assertTrue(latest in result)
+        self.assertTrue('kWh' in result[earliest])
+        self.assertTrue('pence' in result[earliest])
+        self.assertTrue('kgCO2e' in result[earliest])
 
 
 class QATests(TestCase):

@@ -20,6 +20,10 @@ class HttpError(Exception):
     pass
 
 
+class APIError(Exception):
+    pass
+
+
 class Connection(object):
     """Basic class configured to make requests to CarbonCulture's Data API."""
 
@@ -144,6 +148,47 @@ class Connection(object):
         )
 
         return (_r.status_code, _r.content)
+
+    def read_channel_values(self, channel_slug, earliest, latest, **kwargs):
+        """Read values from a given channel, between earliest and latest.
+
+        :param str channel_slug: Slug of channel to read
+        :param datetime earliest: from when to get readings (note, you may not
+            get a point returned at this time if you are reading e.g. usage
+            data since usage is given at the end of a period, so will be given
+            at earliest + resolution)
+        :param datetime latest: up to when to get readings (you should get a
+            point at this time)
+        :param kwargs: extra kwargs to add to the params dict
+        :rtype: tuple list
+        :return: [(timestamp, [values]), ...]
+        :raises: APIError in the case that something is wrong with the request
+
+        """
+        # TODO: this method should support retrieving stats.
+        params = {
+            'slug': channel_slug,
+            'values__earliest': earliest.isoformat(),
+            'values__latest': latest.isoformat(),
+        }
+        params.update(kwargs)  # e.g. resolution, units...
+
+        _r = self.get(
+            self.services['channel'],
+            params=params,
+        )
+        if _r.status_code == 200:
+            _json = _r.json()
+            ch = _json['objects'][0]
+            units = _json['meta'].get('units', [ch['unit']])
+            results = dict(
+                (iso8601.parse_date(x[0]), dict(
+                    (unit, x[1][ix]) for ix, unit in enumerate(units)))
+                for x in ch['values']
+            )
+            return results
+        raise APIError(
+            "API Error: ({}) {}".format(_r.status_code, _r.content))
 
     def create_channel(self, channel_data):
         """Posts to the API to make a new channel. Doesn't do existence check.
