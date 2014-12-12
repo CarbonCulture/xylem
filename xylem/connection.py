@@ -181,11 +181,12 @@ class Connection(object):
             _json = _r.json()
             ch = _json['objects'][0]
             units = _json['meta'].get('units', [ch['unit']])
-            results = dict(
-                (iso8601.parse_date(x[0]), dict(
-                    (unit, x[1][ix]) for ix, unit in enumerate(units)))
+            results = {
+                iso8601.parse_date(x[0]): {
+                    unit: x[1][ix] for ix, unit in enumerate(units)
+                }
                 for x in ch['values']
-            )
+            }
             return results
         raise APIError(
             "API Error: ({}) {}".format(_r.status_code, _r.content))
