@@ -183,7 +183,7 @@ class Connection(object):
             units = _json['meta'].get('units', [ch['unit']])
             results = {
                 iso8601.parse_date(x[0]): {
-                    unit: x[1][ix] for ix, unit in enumerate(units)
+                    unit: x[1][ix] if len(units) > 1 else x[1] for ix, unit in enumerate(units)
                 }
                 for x in ch['values']
             }

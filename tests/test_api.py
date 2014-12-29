@@ -164,6 +164,7 @@ class QATests(TestCase):
         )
         resp = {
             "meta": {
+                "total_count": 2,
                 "qa_only": True,
                 "quality_assurance": [
                     "presence"
@@ -200,6 +201,7 @@ class QATests(TestCase):
         self.assertEqual(min_presence, 0.3)
 
         del resp['objects'][0]
+        resp['meta']['total_count'] = 1
         httpretty.register_uri(
             httpretty.GET, xc.services['channel'],
             body=json.dumps(resp), content_type="application/json"

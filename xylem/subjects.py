@@ -140,8 +140,18 @@ def minimum_data_presence_for_range(conn, earliest, latest, slug=None,
         raise APIError(
             "API Error: ({}) {}".format(resp.status_code, resp.content))
 
+    _json = resp.json()
+    if _json['meta']['total_count'] != len(slugs):
+        present = [x['slug'] for x in _json['objects']]
+        missing = set(slugs) - set(present)
+        raise APIError(
+            "API Error: (403) You don't have access to channels: {}".format(
+                ", ".join(missing)
+            )
+        )
+
     min_presence = 1
-    for channel in resp.json()['objects']:
+    for channel in _json['objects']:
         qa_presence = channel['quality_assurance']
         presence_vals = [vals[0] for ts, vals in qa_presence]
         min_presence = min(min_presence, min(presence_vals))
