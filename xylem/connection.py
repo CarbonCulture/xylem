@@ -133,17 +133,19 @@ class Connection(object):
                 "Got response code {0} from {1}".format(
                     r.status_code, self.endpoint))
 
-    def write_channel_values(self, channel_slug, values):
+    def write_channel_values(self, channel_slug, values, overwrite=False):
         """Write the given values to the channel identified by channel_slug.
 
         :param str channel_slug: Slug of channel to which data will be written
         :param list values: (timestamp, value) list to write to channel
+        :param bool overwrite: Default False, set True to blat old values.
         :rtype (int, str): (status code (one of: 202, 401), message)
         """
         _r = self.patch(
             self.services['channel'] + channel_slug,
             data={
-                'values': values
+                'values': values,
+                'overwrite': overwrite,
             },
         )
 
