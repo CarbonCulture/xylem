@@ -1,26 +1,25 @@
-xylem
-=====
+# xylem
 
-Library to interact with CarbonCulture's Confluence datastore
+Library to interact with CarbonCulture's datastore
 
 
-Installation
-------------
+## Installation
 
 Installation using pip::
 
-    pip install xylem
+    pip install https://github.com/CarbonCulture/xylem/archive/v0.4.11.zip
 
-Usage
------
+## Usage
 
 You'll need an API key and an access name (like a username). Please contact
 developer {at] carbonculture.net to request a key and access name.
 
 
-Credits
--------
+### Fetching data from a Community, Place, Meter etc.
 
-xylem is packaged using seed_.
+You are able to request a section of data for a particular entity on the
+CarbonCulture platform, over a time range, at different resolutions, in
+different units, and with other helpful metadata -- depending on your access
+level and the availability of these data.
 
-.. _seed: https://github.com/adamcharnock/seed/
+
