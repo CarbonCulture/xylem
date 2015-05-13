@@ -17,10 +17,11 @@ developer@carbonculture.net to request a key and access name.
 ### CarbonCulture's entities
 
 CarbonCulture's datastreams are divided into entity types, which consist of
-Communities, Places and Meters. A Community is a group of people, who may or
-may not exist in the same physical location, a Place is a physical entity
+**Communities**, **Places** and **Meters**.
+A **Community** is a group of people, who may or
+may not exist in the same physical location, a **Place** is a physical entity
 around which you could draw a line (if you had enough chalk and lots of
-ladders). A Meter is really an energy data-source rather than necessarily
+ladders). A **Meter** is really an energy data-source rather than necessarily
 being a true physical metering point, and could be derived from one, two (or
 more) input datastreams (e.g. real-time data and a backup half-hourly feed).
 
@@ -40,9 +41,10 @@ Cardiff Castle's ID is 947:
 
 https://platform.carbonculture.net/places/cardiff-castle/947/
 
-Note that a Place or Meter may have the same ID as a Community, but Places
-and Meters never share IDs (this is because internally Places and Meters are
-both represented as the same data structure - a physical 'Asset').
+Note that a **Place** or **Meter** may have the same ID as a **Community**,
+but **Places**
+and **Meters** never share IDs (this is because internally Places and Meters are
+both represented as the same data structure - a physical '**Asset**').
 
 ### Where/how to find data
 
