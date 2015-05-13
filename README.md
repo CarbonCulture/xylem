@@ -91,8 +91,10 @@ There's quite a lot of info in this result, but the pertinent points are the
 result keys:
 
 ```
-In [5]: _4.keys()
-Out[5]: [u'heat', u'elec', u'gas', u'energy']
+In [5]: resources = discover_available_resources(xc, 2, 'communities')
+
+In [6]: resources.keys()
+Out[6]: [u'heat', u'elec', u'gas', u'energy']
 
 ```
 
