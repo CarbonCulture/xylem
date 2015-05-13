@@ -12,7 +12,7 @@ Installation using pip::
 ## Usage
 
 You'll need an API key and an access name (like a username). Please contact
-developer {at] carbonculture.net to request a key and access name.
+developer@carbonculture.net to request a key and access name.
 
 ### CarbonCulture's entities
 
@@ -20,7 +20,7 @@ CarbonCulture's datastreams are divided into entity types, which consist of
 Communities, Places and Meters. A Community is a group of people, who may or
 may not exist in the same physical location, a Place is a physical entity
 around which you could draw a line (if you had enough chalk and lots of
-ladders). A Meter is a really an energy data-source rather than necessarily
+ladders). A Meter is really an energy data-source rather than necessarily
 being a true physical metering point, and could be derived from one, two (or
 more) input datastreams (e.g. real-time data and a backup half-hourly feed).
 
@@ -131,10 +131,13 @@ Out[15]: {u'kWh': 521617.70000000007}
 
 ```
 
-Note that the first value (`earliest`) is 0 - this is because this data is
-given in a cumulative format with the origin set to the earliest point
-requested. If you want to have these data as usage, you can simply subtract one
-from the other, or request it as usage:
+### Transforming data
+
+In the request above, the first value (`earliest`) is 0 - this is because this
+data is given in a cumulative format ('`accum`', the default on this Channel),
+with the origin set to the earliest point requested. If you want to have these
+data as usage, you can simply subtract one from the other, or request it as
+usage:
 
 ```
 
@@ -163,3 +166,51 @@ KeyError                                  Traceback (most recent call last)
 KeyError: datetime.datetime(2015, 1, 1, 0, 0, tzinfo=<UTC>)
 
 ```
+
+You can also request energy data transformed into kilograms of carbon
+(equivalent) (kgCO2e), and in pence (i.e. GBP). The advantage of asking this
+question of the dataserver rather than applying a factor to the resulting kWh
+values is that the dataserver knows what each of the Channel's factors are for
+these transformations over time, and per component input Channel. For example,
+`communities.2.energy` is actually just an aggregation of `communities.2.elec`
+and `communities.2.gas`, but gas and electricity have different costs and
+different carbon impacts, and these change over time. The transformation to the
+input energy use data over time is applied at the lowest level possible so that
+it is as close to the truth as possible. This also applies to e.g. an
+electricity Channel which may be an aggregate of different Meters, and so on.
+
+Here's how that works:
+
+```
+
+In [27]: values = xc.read_channel_values('communities.2.energy', earliest, latest, units='kWh,pence,kgCO2e')
+
+In [28]: values[latest]
+Out[28]:
+{u'kWh': 1226567.4950116458,
+ u'kgCO2e': 380901.7477941546,
+  u'pence': 8488058.28979018}
+
+```
+
+You can also change the resolution of the data, which is half-hourly by
+default. In some cases you may have access to higher-resolution data but
+generally you will only be able to reduce this, so for example if you want one
+point per day over a month:
+
+```
+
+In [32]: values = xc.read_channel_values('communities.2.energy', earliest, latest, resolution=60 * 60 * 24, value_type='usage')
+
+In [33]: values.values()
+Out[33]:
+[{u'kWh': 196027.87567138532},
+ {u'kWh': 148819.09393853648},
+
+ ...
+
+ ```
+ 
+ **NB: Some requests may take a long time to process. If you are experiencing
+ multiple time outs or error responses, please let us know
+ (developer@carbonculture.net).**
