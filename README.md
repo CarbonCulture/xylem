@@ -60,9 +60,7 @@ discovering:
 ```
 In [1]: from xylem.connection import Connection
 
-In [2]: xc = Connection(
-                'carbonculture@apps.utility-graph?communities.2',
-                'bcac16a7f1fc2e32c9e41ea4ff9c7d693e49714e')
+In [2]: xc = Connection('YOUR API USER NAME HERE', 'YOUR API KEY HERE')
 
 In [3]: from xylem.subjects import discover_available_resources
 
