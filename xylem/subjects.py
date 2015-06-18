@@ -52,7 +52,7 @@ def write_app_event(conn, app_slug, event_slug, event_data, subject_id,
     now = datetime.utcnow().replace(tzinfo=pytz.utc)
     code, message = conn.write_channel_values(
         channel_slug, [(now.isoformat(), event_data)])
-    if code != 202:
+    if code not in [202, 204]:
         raise APIError("API Error (Code: {0}): {1}".format(code, message))
 
 

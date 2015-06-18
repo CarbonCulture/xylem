@@ -139,7 +139,7 @@ class Connection(object):
         :param str channel_slug: Slug of channel to which data will be written
         :param list values: (timestamp, value) list to write to channel
         :param bool overwrite: Default False, set True to blat old values.
-        :rtype (int, str): (status code (one of: 202, 401), message)
+        :rtype (int, str): (status code (one of: 202, 204, 401), message)
         """
         _r = self.patch(
             self.services['channel'] + channel_slug,
@@ -197,7 +197,7 @@ class Connection(object):
         """Posts to the API to make a new channel. Doesn't do existence check.
 
         :param dict channel_data: keys and values to make this channel.
-        :rtype (int, str): (status code (one of: 202, 401), message)
+        :rtype (int, str): (status code (one of: 201, 401), message)
 
         """
         _r = self.post(
