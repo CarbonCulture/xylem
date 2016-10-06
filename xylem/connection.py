@@ -13,6 +13,8 @@ from xylem import __version__
 ROOT = 'https://rhizome.carbonculture.net'
 API_PREFIX = 'api/v1'
 
+DEFAULT_TIMEOUT = 60 # seconds
+
 log = logging.getLogger(__name__)
 
 
@@ -44,7 +46,7 @@ class Connection(object):
         self._discover(self._test_connection())
 
     def _request(self, endpoint=None, method=None, params=None, data=None,
-                 extra_headers=None):
+                 extra_headers=None, timeout=DEFAULT_TIMEOUT):
         """Generic request, default to GET."""
         method = method or 'get'
         headers = extra_headers or {}
@@ -63,6 +65,7 @@ class Connection(object):
             params=params,
             data=data,
             headers=headers,
+            timeout=timeout,
         )
         return r
 
